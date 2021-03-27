@@ -1,0 +1,45 @@
+on:
+  push:
+    branches: 
+      - main 
+      - chris-experiments2
+
+jobs:
+  build:
+    name: Run Python Script
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+      - name: run script
+        uses: jannekem/run-python-script-action@v1
+        with:
+          script: |
+            import os
+            import pandas
+            result = pandas.DataFrame()
+            for f in os.listdir("logs"):
+              if f[-3:] == 'txt':
+                temp = pandas.read_csv(f"logs/{f}")
+                temp["description"] = f
+                result = pandas.concat([result, temp])
+            result.to_csv("logs/results.csv", index=False)
+            result["Median Max Drawdown Duration"] = result["Median Max Drawdown Duration"].apply(lambda x: round(x, 1))
+            result['SD RT'] = result['Var RT'].apply(lambda x: x ** 0.5)
+            result2 = result.apply(lambda x: round(x, 4) if x.dtype != "object" else x)
+            columns = ['description','hyperparams', 'Mean RT', 'SD RT', 'Skew RT','Kurt RT', 'Lambda']
+            result2['description'] = result2['description'].apply(lambda x: x[:-25])
+            result2 = result2.sort_values(by=['description','Lambda'])
+            result2[columns].to_latex('result_latex2.txt', index=False)
+      - name: Commit rendered files
+        run: |
+          git config --global user.name "bot"
+          git add -A
+          git commit -m "Update backtest log" || echo "No changes to commit"
+          git push origin main || echo "No changes to commit"
