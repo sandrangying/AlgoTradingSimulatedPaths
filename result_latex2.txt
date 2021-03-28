@@ -1,0 +1,10 @@
+\begin{tabular}{llrrrrr}
+\toprule
+           description &                   hyperparams &  Mean RT &  SD RT &  Skew RT &  Kurt RT &  Lambda \\
+\midrule
+Current Price Weighted &                 frequency = 1 &   0.0116 & 0.0082 &   0.3817 &   4.4470 &       5 \\
+            One-over-n &                 frequency = 1 &   0.0116 & 0.0082 &   0.3817 &   4.4470 &       5 \\
+          Proportional &                 frequency = 1 &   0.0115 & 0.0080 &   0.1520 &   4.3066 &       5 \\
+        Semicovariance & frequency = 100, warmup = 100 &   0.0259 & 0.0076 &   0.3656 &   2.7682 &       5 \\
+\bottomrule
+\end{tabular}
